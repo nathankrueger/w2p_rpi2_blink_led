@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Raspberry Pi 2 py2web server</title>
+<!-- Refactor to .js eventually.-->
+<script>
+var g_fullAddress = "http://nathankrueger.duckdns.org:9999/blink_led/default/cycle";
+
+function visitLink(theUrl)
+{
+	console.log("Visitng link: " + theUrl);
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+	xmlHttp.send(null);
+}
+
+// Stolen from stackoverflow.com
+function httpGetAsync(theUrl, callback)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.send(null);
+}
+
+function visitCycleLink()
+{
+	var theUrl = "cycle";
+	var rate = document.getElementById("rate").value;
+	theUrl = theUrl + "?rate=" + rate;
+	visitLink(theUrl);
+}
+
+function readPinState()
+{
+	var theUrl = "read";
+    var pinNum = document.getElementById("input_pin_input").value;
+    theUrl = theUrl + "?pin=" + pinNum;
+    httpGetAsync(theUrl, updatePinStateLabelCallback);
+}
+
+function updatePinStateLabelCallback(pin_state)
+{
+    var newVal = "Input Value: " + pin_state;
+    document.getElementById("input_val_p").innerHTML = newVal;
+}
+
+</script>
+<!-- Refactor to .css eventually.-->
+<style>
+  #opaque_img {
+    opacity:0.4;
+	  }
+</style>
+</head>
+    <body>
+        <div id="background">
+            <center>
+            <h1>{{=message}}</h1>
+            <br>
+            <!--a href="cycle">Cycle</a-->
+            <br>
+            <h2>Output</h2>
+            <button type="button" id="cycle_btn" onclick="visitCycleLink()">Cycle LEDs</button>
+            <input type=number min=1 step=1 value=1 name="rate" id="rate">Rate (s)</input>
+            <br>
+            <h2>Input</h2>
+            <button type="button" id="read_btn" onclick="readPinState()">Read Pin</button>
+            <input type=number min=1 step=1 value=19 name="input_pin_input" id="input_pin_input">Pin Number</input>
+            <p id="input_val_p">Input Value: X</p> 
+            </center>
+        </div>
+    </body>
+</html>

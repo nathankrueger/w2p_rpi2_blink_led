@@ -1,0 +1,13 @@
+<html>
+    <body>
+        <center>
+            <h1>
+                Hello World!
+                <br>
+                {{=message}}
+                <br>
+                <a href="cycle">Cycle</a>
+            </h1>
+        </center>
+    </body>
+</html>
