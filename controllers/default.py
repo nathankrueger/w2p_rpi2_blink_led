@@ -34,7 +34,7 @@ def __system(cmd, block):
     return result
 
 def index():
-    return dict(message="Hello WWW, my name is Nathan, today I'll be learning about the MVC pattern, py2web, and RPI 2 GPIO.")
+    return dict(message="Hello WWW, my name is Nathan, today I'll be learning about the MVC pattern, web2py, and RPI 2 GPIO.")
 
 def foo():
     f = open("/home/pi/TEST_FILE.txt", 'w')
