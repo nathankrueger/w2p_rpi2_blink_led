@@ -6,6 +6,27 @@
 <script>
 var g_fullAddress = "http://nathankrueger.duckdns.org:9999/blink_led/default/cycle";
 
+setInterval(timer_callback, 5000);
+function timer_callback()
+{
+    httpGetAsync("cputempf", updateCpuTempFLabelCallback);
+    httpGetAsync("gputempf", updateGpuTempFLabelCallback);
+    //console.log("temp timer callback!")
+}
+
+function updateCpuTempFLabelCallback(temp_f)
+{
+    var newVal = "CPU Temp (F): " + temp_f;
+    document.getElementById("cpu_temp_p").innerHTML = newVal;
+}
+
+function updateGpuTempFLabelCallback(temp_f)
+{
+    var newVal = "GPU Temp (F): " + temp_f;
+    console.log(temp_f)
+    document.getElementById("gpu_temp_p").innerHTML = newVal;
+}
+
 function visitLink(theUrl)
 {
 	console.log("Visitng link: " + theUrl);
@@ -62,6 +83,10 @@ function updatePinStateLabelCallback(pin_state)
             <h1>{{=message}}</h1>
             <br>
             <!--a href="cycle">Cycle</a-->
+            <br>
+            <h2>Status</h2>
+            <p id="cpu_temp_p">CPU Temp (F): -</p>
+            <p id="gpu_temp_p">GPU Temp (F): -</p>
             <br>
             <h2>Output</h2>
             <button type="button" id="cycle_btn" onclick="visitCycleLink()">Cycle LEDs</button>

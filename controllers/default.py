@@ -5,6 +5,7 @@ import time
 import subprocess
 import shlex
 import commands
+import re
 
 #########################################################################
 ## This is a sample controller
@@ -34,7 +35,7 @@ def __system(cmd, block):
     return result
 
 def index():
-    return dict(message="Hello WWW, my name is Nathan, today I'll be learning about the MVC pattern, web2py, and RPI 2 GPIO.")
+    return dict(message="Hello WWW, my name is Nathan and today I'll be learning about the MVC pattern, web2py, and RPI 2 GPIO.")
 
 def foo():
     f = open("/home/pi/TEST_FILE.txt", 'w')
@@ -44,6 +45,27 @@ def foo():
 
 def button():
     return HTML(BODY(CENTER(FORM(BUTTON("Cycle LEDs", _name="cycle_btn", _value="cycle"), _action="", _method="post"))))
+
+def cputempf():
+    try:
+        raw_temp = int(__system("cat /sys/class/thermal/thermal_zone0/temp", True))
+        raw_temp = raw_temp / 1000.0
+        f_temp = (raw_temp*(9.0/5.0)) + 32.0
+    except Exception as err:
+        return err
+        
+    return "{0:.2f}".format(f_temp)
+
+def gputempf():
+    try:
+        raw_temp = __system("/opt/vc/bin/vcgencmd measure_temp", True)
+        match = re.search(r'temp=(\d+\.\d*)', raw_temp)
+        if match:
+            f_temp = (float(match.group(1))*(9.0/5.0)) + 32.0
+    except Exception as err:
+        return err
+        
+    return "{0:.2f}".format(f_temp)
 
 def cycle():
     # Attempt to get the rate parameter
