@@ -6,12 +6,21 @@
 <script>
 var g_fullAddress = "http://nathankrueger.duckdns.org:9999/blink_led/default/cycle";
 
+window.onload = getStatus()
+
 setInterval(timer_callback, 5000);
 function timer_callback()
 {
+    updateStatus()
+    //console.log("temp timer callback!")
+}
+
+function getStatus()
+{
     httpGetAsync("cputempf", updateCpuTempFLabelCallback);
     httpGetAsync("gputempf", updateGpuTempFLabelCallback);
-    //console.log("temp timer callback!")
+    httpGetAsync("ambienttempf", updateAmbientTempFLabelCallback);
+    httpGetAsync("ambientpressureb", updateAmbientPressureBLabelCallback);
 }
 
 function updateCpuTempFLabelCallback(temp_f)
@@ -24,6 +33,18 @@ function updateGpuTempFLabelCallback(temp_f)
 {
     var newVal = "GPU Temp (F): " + temp_f;
     document.getElementById("gpu_temp_p").innerHTML = newVal;
+}
+
+function updateAmbientTempFLabelCallback(temp_f)
+{
+    var newVal = "Ambient Temp (F): " + temp_f;
+    document.getElementById("ambient_temp_f_p").innerHTML = newVal;
+}
+
+function updateAmbientPressureBLabelCallback(pressure_b)
+{
+    var newVal = "Ambient Pressure (Bar): " + pressure_b;
+    document.getElementById("ambient_pressure_b_p").innerHTML = newVal;
 }
 
 function visitLink(theUrl)
@@ -86,6 +107,8 @@ function updatePinStateLabelCallback(pin_state)
             <h2>Status</h2>
             <p id="cpu_temp_p">CPU Temp (F): -</p>
             <p id="gpu_temp_p">GPU Temp (F): -</p>
+            <p id="ambient_temp_f_p">Ambient Temp (F): -</p>
+            <p id="ambient_pressure_b_p">Ambient Pressure (Bar): -</p>
             <br>
             <h2>Output</h2>
             <button type="button" id="cycle_btn" onclick="visitCycleLink()">Cycle LEDs</button>

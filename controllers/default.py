@@ -67,6 +67,22 @@ def gputempf():
         
     return "{0:.2f}".format(f_temp)
 
+def ambienttempf():
+    try:
+        temp_f = __system("sudo python /home/pi/programming/bmp085/bmp085.py --temp=f", True)
+    except Exception as err:
+        return err
+                     
+    return temp_f   
+                                       
+def ambientpressureb():
+    try:
+        pressure_b = __system("sudo python /home/pi/programming/bmp085/bmp085.py --pressure=b", True)
+    except Exception as err:
+        return err
+                                                                       
+    return pressure_b
+
 def cycle():
     # Attempt to get the rate parameter
     rate = request.vars['rate']
