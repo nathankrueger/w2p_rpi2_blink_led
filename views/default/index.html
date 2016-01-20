@@ -6,21 +6,20 @@
 <script>
 var g_fullAddress = "http://nathankrueger.duckdns.org:9999/blink_led/default/cycle";
 
-window.onload = getStatus()
+window.onload = updateStatus()
 
 setInterval(timer_callback, 5000);
 function timer_callback()
 {
     updateStatus()
-    //console.log("temp timer callback!")
+    //console.log("status timer callback!")
 }
 
-function getStatus()
+function updateStatus()
 {
     httpGetAsync("cputempf", updateCpuTempFLabelCallback);
     httpGetAsync("gputempf", updateGpuTempFLabelCallback);
-    httpGetAsync("ambienttempf", updateAmbientTempFLabelCallback);
-    httpGetAsync("ambientpressureb", updateAmbientPressureBLabelCallback);
+    httpGetAsync("ambient_tempf_pressureb", updateAmbientTempFAndPressureBLabelCallback);
 }
 
 function updateCpuTempFLabelCallback(temp_f)
@@ -35,16 +34,17 @@ function updateGpuTempFLabelCallback(temp_f)
     document.getElementById("gpu_temp_p").innerHTML = newVal;
 }
 
-function updateAmbientTempFLabelCallback(temp_f)
+function updateAmbientTempFAndPressureBLabelCallback(resp)
 {
-    var newVal = "Ambient Temp (F): " + temp_f;
-    document.getElementById("ambient_temp_f_p").innerHTML = newVal;
-}
+    var resp_list = resp.split(/\r?\n/);
+    temp_f = resp_list[0];
+    pressure_b = resp_list[1];
 
-function updateAmbientPressureBLabelCallback(pressure_b)
-{
-    var newVal = "Ambient Pressure (Bar): " + pressure_b;
-    document.getElementById("ambient_pressure_b_p").innerHTML = newVal;
+    var newTVal = "Ambient Temp (F): " + temp_f;
+    document.getElementById("ambient_temp_f_p").innerHTML = newTVal;
+
+    var newPVal = "Ambient Pressure (Bar): " + pressure_b;
+    document.getElementById("ambient_pressure_b_p").innerHTML = newPVal;
 }
 
 function visitLink(theUrl)
