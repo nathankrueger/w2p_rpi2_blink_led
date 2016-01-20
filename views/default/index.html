@@ -99,16 +99,15 @@ function updatePinStateLabelCallback(pin_state)
 </head>
     <body>
         <div id="background">
-            <center>
             <h1>{{=message}}</h1>
             <br>
-            <!--a href="cycle">Cycle</a-->
-            <br>
             <h2>Status</h2>
-            <p id="cpu_temp_p">CPU Temp (F): -</p>
-            <p id="gpu_temp_p">GPU Temp (F): -</p>
-            <p id="ambient_temp_f_p">Ambient Temp (F): -</p>
-            <p id="ambient_pressure_b_p">Ambient Pressure (Bar): -</p>
+            <ul>
+                <li><p id="cpu_temp_p">CPU Temp (F): -</p></li>
+                <li><p id="gpu_temp_p">GPU Temp (F): -</p></li>
+                <li><p id="ambient_temp_f_p">Ambient Temp (F): -</p></li>
+                <li><p id="ambient_pressure_b_p">Ambient Pressure (Bar): -</p></li>
+            </ul>
             <br>
             <h2>Output</h2>
             <button type="button" id="cycle_btn" onclick="visitCycleLink()">Cycle LEDs</button>
@@ -118,7 +117,6 @@ function updatePinStateLabelCallback(pin_state)
             <button type="button" id="read_btn" onclick="readPinState()">Read Pin</button>
             <input type=number min=1 step=1 value=19 name="input_pin_input" id="input_pin_input">Pin Number</input>
             <p id="input_val_p">Input Value: X</p> 
-            </center>
         </div>
     </body>
 </html>
