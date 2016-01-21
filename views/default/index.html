@@ -6,15 +6,31 @@
 
 <!-- Refactor to .js eventually.-->
 <script>
+ // Global constants
 var g_fullAddress = "http://nathankrueger.duckdns.org:9999/blink_led/default/cycle";
 
+// Setup onLoad behavior
 window.onload = updateStatus()
 
+// Setup timer callbacks
 setInterval(timer_callback, 5000);
+setInterval(status_text_callback, 1000);
+
+// Functions
 function timer_callback()
 {
     updateStatus()
     //console.log("status timer callback!")
+}
+
+function status_text_callback()
+{
+    var newText = document.getElementById("status_header").innerHTML;
+    newText += ".";
+    if (newText == "Status....")
+        newText = "Status"
+
+    document.getElementById("status_header").innerHTML = newText;
 }
 
 function updateStatus()
@@ -97,7 +113,7 @@ function updatePinStateLabelCallback(pin_state)
         <div id="background">
             <h1>{{=message}}</h1>
             <br>
-            <h2>Status</h2>
+            <h2 id="status_header">Status</h2>
             <ul>
                 <li><p id="cpu_temp_p">CPU Temp (F): -</p></li>
                 <li><p id="gpu_temp_p">GPU Temp (F): -</p></li>
