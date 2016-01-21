@@ -83,6 +83,14 @@ def ambientpressureb():
                                                                        
     return pressure_b
 
+def ambient_tempf_pressureb():
+    try:
+        result = __system("sudo python /home/pi/programming/bmp085/bmp085.py --temp=f --pressure=b", True)
+    except Exception as err:
+        return err
+                                                                       
+    return result
+
 def cycle():
     # Attempt to get the rate parameter
     rate = request.vars['rate']
