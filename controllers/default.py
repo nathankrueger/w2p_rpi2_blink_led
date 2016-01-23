@@ -47,6 +47,7 @@ def button():
     return HTML(BODY(CENTER(FORM(BUTTON("Cycle LEDs", _name="cycle_btn", _value="cycle"), _action="", _method="post"))))
 
 def cputempf():
+    __show_activity()
     try:
         raw_temp = int(__system("cat /sys/class/thermal/thermal_zone0/temp", True))
         raw_temp = raw_temp / 1000.0
@@ -57,6 +58,7 @@ def cputempf():
     return "{0:.2f}".format(f_temp)
 
 def gputempf():
+    __show_activity()
     try:
         raw_temp = __system("/opt/vc/bin/vcgencmd measure_temp", True)
         match = re.search(r'temp=(\d+\.\d*)', raw_temp)
@@ -68,6 +70,7 @@ def gputempf():
     return "{0:.2f}".format(f_temp)
 
 def ambienttempf():
+    __show_activity()
     try:
         temp_f = __system("sudo python /home/pi/programming/bmp085/bmp085.py --temp=f", True)
     except Exception as err:
@@ -76,6 +79,7 @@ def ambienttempf():
     return temp_f   
                                        
 def ambientpressureb():
+    __show_activity()
     try:
         pressure_b = __system("sudo python /home/pi/programming/bmp085/bmp085.py --pressure=b", True)
     except Exception as err:
@@ -84,6 +88,7 @@ def ambientpressureb():
     return pressure_b
 
 def ambient_tempf_pressureb():
+    __show_activity()
     try:
         result = __system("sudo python /home/pi/programming/bmp085/bmp085.py --temp=f --pressure=b", True)
     except Exception as err:
@@ -92,6 +97,7 @@ def ambient_tempf_pressureb():
     return result
 
 def cycle():
+    __show_activity()
     # Attempt to get the rate parameter
     rate = request.vars['rate']
     return __cycle(rate)
@@ -111,6 +117,7 @@ def __cycle(rate):
     return HTML(BODY(H1("Cycling LEDS @ rate: {0}!".format(rate))))
 
 def read():
+    __show_activity()
     pin = request.vars['pin']
     return __read(pin)
 
@@ -123,6 +130,11 @@ def __read(pin):
 
     val = __system("python {0} --read_input {1}".format(BLINK_LED_SCRIPT, pin), True)
     return val
+
+def __show_activity():
+    ACTIVITY_LED = 13
+    PERIOD = 0.3
+    __system("python {0} --pulse_output={1},{2}".format(BLINK_LED_SCRIPT, ACTIVITY_LED, PERIOD), False)
 
 def user():
     """

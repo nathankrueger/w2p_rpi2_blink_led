@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>>Raspberry Pi 2 py2web server</title>
+<title>Raspberry Pi 2 web2py server</title>
 <link rel="stylesheet" type="text/css" href="{{=URL('static', 'css/style.css')}}">
 <link rel="shortcut icon" href="{{=URL('static', 'images/pi.ico')}}">
 
@@ -47,11 +47,12 @@ var chart_options = {
 window.onload = onWindowLoad();
 
 // Setup timer callbacks
-setInterval(timer_callback, 3000);
+var sensor_sample_rate = 3000;
+setInterval(timer_callback, sensor_sample_rate);
 setInterval(status_text_callback, 1000);
 setInterval(header_color_callback, 100);
 // Chart Callback
-setInterval(drawChart, 500);
+setInterval(drawChart, sensor_sample_rate);
 
 // Functions
 function onWindowLoad()
@@ -78,7 +79,8 @@ var dir = 0;
 function header_color_callback()
 {
     header_color_callback.max = 255;
-    header_color_callback.min = 50;
+    header_color_callback.min = 150;
+    header_color_callback.delta = 5;
     var color_str = document.getElementById("main_header").style.color;
     var re =  /(rgb\(\d+,\s)(\d+)(,\s\d+\))/g;
     var match = re.exec(color_str);
@@ -88,7 +90,7 @@ function header_color_callback()
     {
         if(match_int > header_color_callback.min)
         {
-            match_int--;
+            match_int -= header_color_callback.delta;
         }
         else
         {
@@ -99,7 +101,7 @@ function header_color_callback()
     {
         if(match_int < header_color_callback.max)
         {
-            match_int++;
+            match_int += header_color_callback.delta;
         }
         else
         {
