@@ -47,12 +47,12 @@ var chart_options = {
 window.onload = onWindowLoad();
 
 // Setup timer callbacks
-var sensor_sample_rate = 3000;
+var sensor_sample_rate = 2000;
 setInterval(timer_callback, sensor_sample_rate);
 setInterval(status_text_callback, 1000);
 setInterval(header_color_callback, 100);
 // Chart Callback
-setInterval(drawChart, sensor_sample_rate);
+setInterval(drawChart, sensor_sample_rate / 2);
 
 // Functions
 function onWindowLoad()
@@ -216,8 +216,10 @@ function drawChart() {
     if (minTemp < (drawChart.lastMin - drawChart.threshold))
         drawChart.lastMin = minTemp;
 
-    chart_options.vAxis.minValue = minTemp - 1;
-    chart_options.vAxis.maxValue = maxTemp + 1;
+    chart_options.vAxis.minValue = drawChart.lastMin - 1;
+    chart_options.vAxis.maxValue = drawChart.lastMax + 1;
+    //console.log("Last Min: " + drawChart.lastMin.toString());
+    //console.log("Last Max: " + drawChart.lastMax.toString());
     chart.draw(chart_data, chart_options);
 }
 
