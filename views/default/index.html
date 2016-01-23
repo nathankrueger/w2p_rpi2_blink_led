@@ -11,21 +11,32 @@
 <!-- Refactor to .js eventually.-->
 <script>
 google.load('visualization', '1', {packages: ['corechart']});
+google.setOnLoadCallback(drawChart);
 
  // Global constants
 var g_fullAddress = "http://nathankrueger.duckdns.org:9999/blink_led/default/cycle";
 
 // Global variables
+var maxTemp = -1000;
+var minTemp = 1000;
+var chart = null;
 var chart_data = new google.visualization.DataTable();
 chart_data.addColumn('timeofday', 'Time of Day');
 chart_data.addColumn('number', 'Temp (f)');
 var chart_options = {
-    title: 'Temp Graph',
+    title: 'Ambient Temp Graph',
     curveType: 'function',
     legend: { position: 'bottom' },
+    colors: [ '#FF0000' ],
     vAxis: {
         minValue: 65,
-        maxValue: 75
+        maxValue: 75,
+        textStyle:{color: '#32CD32'},
+        gridlines:{color: '#32CD32'},
+    },
+    hAxis: {
+        textStyle:{color: '#32CD32'},
+        gridlines:{color: '#32CD32'}
     },
     backgroundColor: { fill: "#000000" },
     legendTextStyle: { color: '#32CD32' },
@@ -33,15 +44,20 @@ var chart_options = {
 };
 
 // Setup onLoad behavior
-window.onload = updateStatus();
+window.onload = onWindowLoad();
 
 // Setup timer callbacks
 setInterval(timer_callback, 3000);
 setInterval(status_text_callback, 1000);
 // Chart Callback
-setInterval(drawChart, 5000);
+setInterval(drawChart, 500);
 
 // Functions
+function onWindowLoad()
+{
+    updateStatus();
+}
+
 function timer_callback()
 {
     updateStatus();
@@ -85,6 +101,12 @@ function updateAmbientTempFAndPressureBCallback(resp)
     var resp_list = resp.split(/\r?\n/);
     temp_f = resp_list[0];
     pressure_b = resp_list[1];
+
+    if (parseFloat(temp_f) > maxTemp)
+        maxTemp = parseFloat(temp_f)
+
+    else if (parseFloat(temp_f) < minTemp)
+        minTemp = parseFloat(temp_f)
 
     // Push to the graph
     chart_data.addRows([[[currDate.getHours(), currDate.getMinutes(), currDate.getSeconds()],parseFloat(temp_f)]]);    
@@ -140,7 +162,22 @@ function updatePinStateLabelCallback(pin_state)
 }
 
 function drawChart() {
-    var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+    drawChart.threshold = 3;
+    drawChart.lastMax = drawChart.lastMax || maxTemp;
+    drawChart.lastMin = drawChart.lastMin || minTemp;
+    if (chart == null)
+    {
+        chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+    }
+
+    if (maxTemp > (drawChart.lastMax + drawChart.threshold))
+        drawChart.lastMax = maxTemp;
+
+    if (minTemp < (drawChart.lastMin - drawChart.threshold))
+        drawChart.lastMin = minTemp;
+
+    chart_options.vAxis.minValue = minTemp - 1;
+    chart_options.vAxis.maxValue = maxTemp + 1;
     chart.draw(chart_data, chart_options);
 }
 
