@@ -5,9 +5,22 @@ body {
 h2,h1 {
     font-family: "Lucida Console", Monaco, monospace;
     color: lime;
+    margin-right: 150px;
+    margin-left: 50px;
 }
 
 p {
     font-family: "Lucida Console", Monaco, monospace;
     color: lime;
+    margin-right: 150px;
+    margin-left: 50px;
+}
+
+button {
+    font-family: "Lucida Console", Monaco, monospace;
+    margin-left: 50px;
+}
+
+input {
+    font-family: "Lucida Console", Monaco, monospace;
 }

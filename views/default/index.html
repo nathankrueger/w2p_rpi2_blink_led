@@ -5,23 +5,46 @@
 <link rel="stylesheet" type="text/css" href="{{=URL('static', 'css/style.css')}}">
 <link rel="shortcut icon" href="{{=URL('static', 'images/pi.ico')}}">
 
+<!-- Google JS libraries  -->
+<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart', 'timeline']}]}"></script>
+
 <!-- Refactor to .js eventually.-->
 <script>
+google.load('visualization', '1', {packages: ['corechart']});
+
  // Global constants
 var g_fullAddress = "http://nathankrueger.duckdns.org:9999/blink_led/default/cycle";
 
+// Global variables
+var chart_data = new google.visualization.DataTable();
+chart_data.addColumn('timeofday', 'Time of Day');
+chart_data.addColumn('number', 'Temp (f)');
+var chart_options = {
+    title: 'Temp Graph',
+    curveType: 'function',
+    legend: { position: 'bottom' },
+    vAxis: {
+        minValue: 65,
+        maxValue: 75
+    },
+    backgroundColor: { fill: "#000000" },
+    legendTextStyle: { color: '#32CD32' },
+    titleTextStyle: { color: '#32CD32' }
+};
+
 // Setup onLoad behavior
-window.onload = updateStatus()
+window.onload = updateStatus();
 
 // Setup timer callbacks
-setInterval(timer_callback, 5000);
+setInterval(timer_callback, 3000);
 setInterval(status_text_callback, 1000);
+// Chart Callback
+setInterval(drawChart, 5000);
 
 // Functions
 function timer_callback()
 {
-    updateStatus()
-    //console.log("status timer callback!")
+    updateStatus();
 }
 
 function status_text_callback()
@@ -38,7 +61,7 @@ function updateStatus()
 {
     httpGetAsync("cputempf", updateCpuTempFLabelCallback);
     httpGetAsync("gputempf", updateGpuTempFLabelCallback);
-    httpGetAsync("ambient_tempf_pressureb", updateAmbientTempFAndPressureBLabelCallback);
+    httpGetAsync("ambient_tempf_pressureb", updateAmbientTempFAndPressureBCallback);
 }
 
 function updateCpuTempFLabelCallback(temp_f)
@@ -53,12 +76,20 @@ function updateGpuTempFLabelCallback(temp_f)
     document.getElementById("gpu_temp_p").innerHTML = newVal;
 }
 
-function updateAmbientTempFAndPressureBLabelCallback(resp)
+function updateAmbientTempFAndPressureBCallback(resp)
 {
+    // Grab the current time
+    var currDate = new Date();
+
+    // Parse the response from the server
     var resp_list = resp.split(/\r?\n/);
     temp_f = resp_list[0];
     pressure_b = resp_list[1];
 
+    // Push to the graph
+    chart_data.addRows([[[currDate.getHours(), currDate.getMinutes(), currDate.getSeconds()],parseFloat(temp_f)]]);    
+
+    // Update the status fields
     var newTVal = "Ambient Temp (F): " + temp_f;
     document.getElementById("ambient_temp_f_p").innerHTML = newTVal;
 
@@ -108,7 +139,13 @@ function updatePinStateLabelCallback(pin_state)
     document.getElementById("input_val_p").innerHTML = newVal;
 }
 
+function drawChart() {
+    var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+    chart.draw(chart_data, chart_options);
+}
+
 </script>
+
 </head>
     <body>
         <div id="background">
@@ -130,6 +167,7 @@ function updatePinStateLabelCallback(pin_state)
             <button type="button" id="read_btn" onclick="readPinState()">Read Pin</button>
             <input type=number min=1 step=1 value=19 name="input_pin_input" id="input_pin_input">Pin Number</input>
             <p id="input_val_p">Input Value: X</p> 
+            <div id="curve_chart" style="width: 900px; height: 300px"></div>
         </div>
     </body>
 </html>
