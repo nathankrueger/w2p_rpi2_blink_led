@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Raspberry Pi 2 py2web server</title>
+<title>>Raspberry Pi 2 py2web server</title>
 <link rel="stylesheet" type="text/css" href="{{=URL('static', 'css/style.css')}}">
 <link rel="shortcut icon" href="{{=URL('static', 'images/pi.ico')}}">
 
@@ -49,6 +49,7 @@ window.onload = onWindowLoad();
 // Setup timer callbacks
 setInterval(timer_callback, 3000);
 setInterval(status_text_callback, 1000);
+setInterval(header_color_callback, 100);
 // Chart Callback
 setInterval(drawChart, 500);
 
@@ -71,6 +72,43 @@ function status_text_callback()
         newText = "Status"
 
     document.getElementById("status_header").innerHTML = newText;
+}
+
+var dir = 0;
+function header_color_callback()
+{
+    header_color_callback.max = 255;
+    header_color_callback.min = 50;
+    var color_str = document.getElementById("main_header").style.color;
+    var re =  /(rgb\(\d+,\s)(\d+)(,\s\d+\))/g;
+    var match = re.exec(color_str);
+    var match_int = parseInt(match[2]);
+    
+    if(dir == 0)
+    {
+        if(match_int > header_color_callback.min)
+        {
+            match_int--;
+        }
+        else
+        {
+            dir = 1;
+        }
+    }
+    else
+    {
+        if(match_int < header_color_callback.max)
+        {
+            match_int++;
+        }
+        else
+        {
+            dir = 0;
+        }
+    }
+
+    var new_color_str = match[1] + match_int.toString() + match[3];
+    document.getElementById("main_header").style.color = new_color_str;
 }
 
 function updateStatus()
@@ -141,15 +179,15 @@ function httpGetAsync(theUrl, callback)
 
 function visitCycleLink()
 {
-	var theUrl = "cycle";
-	var rate = document.getElementById("rate").value;
-	theUrl = theUrl + "?rate=" + rate;
-	visitLink(theUrl);
+    var theUrl = "cycle";
+    var rate = document.getElementById("rate").value;
+    theUrl = theUrl + "?rate=" + rate;
+    visitLink(theUrl);
 }
 
 function readPinState()
 {
-	var theUrl = "read";
+    var theUrl = "read";
     var pinNum = document.getElementById("input_pin_input").value;
     theUrl = theUrl + "?pin=" + pinNum;
     httpGetAsync(theUrl, updatePinStateLabelCallback);
@@ -186,7 +224,7 @@ function drawChart() {
 </head>
     <body>
         <div id="background">
-            <h1>{{=message}}</h1>
+            <h1 id="main_header" style="color: #32CD32">{{=message}}</h1>
             <br>
             <h2 id="status_header">Status</h2>
             <ul>
@@ -204,7 +242,7 @@ function drawChart() {
             <button type="button" id="read_btn" onclick="readPinState()">Read Pin</button>
             <input type=number min=1 step=1 value=19 name="input_pin_input" id="input_pin_input">Pin Number</input>
             <p id="input_val_p">Input Value: X</p> 
-            <div id="curve_chart" style="width: 900px; height: 300px"></div>
+            <div id="curve_chart" style="width: 900px; height: 300px; margin-left: -30px"></div>
         </div>
     </body>
 </html>
